@@ -3,7 +3,8 @@ const express = require('express');
 const cors = require('cors');
 const db = require('./database');
 const bodyParser = require('body-parser');
-const carsController = require('c:/Users/jeanj/car-api/Controllers/usersControllers');
+const checkApiKey = require('./middleware/checkapikey');
+const carsController = require('./Controllers/usersControllers');
 
 // Création de l'application Express
 const app = express();
@@ -28,12 +29,12 @@ app.get('/', (req, res) => {
     }
   });
 });
-// Routes CRUD
-app.get('/api/cars', carsController.getAllCars);
-app.get('/api/cars/:id', carsController.getCarById);
-app.post('/api/cars', carsController.createCar);
-app.put('/api/cars/:id', carsController.updateCar);
-app.delete('/api/cars/:id', carsController.deleteCar);
+// Routes CRUD (protégées par le middleware)
+app.get('/api/cars', checkApiKey, carsController.getAllCars);
+app.get('/api/cars/:id', checkApiKey, carsController.getCarById);
+app.post('/api/cars', checkApiKey, carsController.createCar);
+app.put('/api/cars/:id', checkApiKey, carsController.updateCar);
+app.delete('/api/cars/:id', checkApiKey, carsController.deleteCar);
 
 // Gestion des routes non trouvées
 app.use((req, res) => {
